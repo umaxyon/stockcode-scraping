@@ -20,3 +20,9 @@ Resources:
       Runtime: go1.x
       Role: arn:aws:iam::007575903924:role/execLambda
       Timeout: 240
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /stockcode-scraping
+            Method: get

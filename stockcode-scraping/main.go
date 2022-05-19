@@ -6,44 +6,31 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
 var (
-	// DefaultHTTPGetAddress Default Address
-	DefaultHTTPGetAddress = "https://checkip.amazonaws.com"
-
-	// ErrNoIP No IP found in response
-	ErrNoIP = errors.New("No IP in HTTP response")
-
-	// ErrNon200Response non 200 status code in response
+	YahooProfileUrl   = "https://profile.yahoo.co.jp/"
 	ErrNon200Response = errors.New("Non 200 Response found")
 )
 
-func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	resp, err := http.Get(DefaultHTTPGetAddress)
+func handler() error {
+	resp, err := http.Get(YahooProfileUrl)
 	if err != nil {
-		return events.APIGatewayProxyResponse{}, err
+		return err
 	}
 
 	if resp.StatusCode != 200 {
-		return events.APIGatewayProxyResponse{}, ErrNon200Response
+		return ErrNon200Response
 	}
 
-	ip, err := ioutil.ReadAll(resp.Body)
+	doc, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return events.APIGatewayProxyResponse{}, err
+		return err
 	}
 
-	if len(ip) == 0 {
-		return events.APIGatewayProxyResponse{}, ErrNoIP
-	}
-
-	return events.APIGatewayProxyResponse{
-		Body:       fmt.Sprintf("Hello, %v", string(ip)),
-		StatusCode: 200,
-	}, nil
+	fmt.Println(string(doc))
+	return nil
 }
 
 func main() {
