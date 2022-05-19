@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  stockcode-scraping
+  
+  Sample SAM Template for stockcode-scraping
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 5
+
+Resources:
+  StockcodeScraping:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: stockcode-scraping/
+      Handler: stockcode-scraping
+      MemorySize: 256
+      Runtime: go1.x
+      Role: arn:aws:iam::007575903924:role/execLambda
+      Timeout: 240
