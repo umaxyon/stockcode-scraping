@@ -1,20 +1,25 @@
 package main
 
 import (
-	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
 	"stockcode-scraping/yh"
 )
 
-func handler() (interface{}, error) {
-	list, err := yh.NewIndustry().GetIndustryDataList()
+func handler() error {
+	var err error = nil
+	ind := yh.NewIndustry()
+
+	err = ind.GetIndustryLinkList()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	fmt.Println(list)
+	err = ind.GetAllStockCodeLinkList()
+	if err != nil {
+		return err
+	}
 
-	return list, nil
+	return nil
 }
 
 func main() {
