@@ -1,36 +1,20 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-
 	"github.com/aws/aws-lambda-go/lambda"
+	"stockcode-scraping/yh"
 )
 
-var (
-	YahooProfileUrl   = "https://profile.yahoo.co.jp/"
-	ErrNon200Response = errors.New("Non 200 Response found")
-)
-
-func handler() error {
-	resp, err := http.Get(YahooProfileUrl)
+func handler() (interface{}, error) {
+	list, err := yh.NewIndustry().GetIndustryDataList()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if resp.StatusCode != 200 {
-		return ErrNon200Response
-	}
+	fmt.Println(list)
 
-	doc, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(string(doc))
-	return nil
+	return list, nil
 }
 
 func main() {
