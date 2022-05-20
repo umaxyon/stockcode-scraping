@@ -17,4 +17,4 @@
 .aws-sam
 .idea
 output.txt
-.template.yaml
+template.yaml
