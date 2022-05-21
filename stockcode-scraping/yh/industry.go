@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
 )
 
 var (
@@ -79,16 +80,36 @@ func (m *Industry) GetAllStockCodeLinkList() error {
 	industryChunkList := m.LinkChunk(5)
 	stockCode := NewStockCode()
 
+	type Ret struct {
+		chunkStockCodeList []StockCodeLink
+		errList            []error
+	}
 	var allList []StockCodeLink
 	var allErrList []error
+	var wg sync.WaitGroup
+	ch := make(chan Ret)
 	for i := range industryChunkList {
-		chunkStockCodeList, errList := stockCode.Scraping(industryChunkList[i])
-		if errList != nil {
-			allErrList = append(allErrList, errList...)
-		} else {
-			allList = append(allList, chunkStockCodeList...)
-		}
+		wg.Add(1)
+		i := i
+		go func(c chan<- Ret) {
+			chunkStockCodeList, errList := stockCode.Scraping(industryChunkList[i])
+			c <- Ret{chunkStockCodeList, errList}
+		}(ch)
 	}
+
+	go func(c <-chan Ret) {
+		for r := range c {
+			if r.errList != nil {
+				allErrList = append(allErrList, r.errList...)
+			} else {
+				allList = append(allList, r.chunkStockCodeList...)
+			}
+			wg.Done()
+		}
+	}(ch)
+
+	wg.Wait()
+	close(ch)
 
 	if allErrList != nil {
 		var errStr string
