@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  StCode:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "stcode"
+      AttributeDefinitions:
+        - AttributeName: "code"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "code"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "10"
