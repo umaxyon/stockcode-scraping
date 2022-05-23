@@ -10,6 +10,10 @@ import (
 	"sync"
 )
 
+const (
+	ThreadCount = 5
+)
+
 var (
 	YahooProfileUrl   = "https://profile.yahoo.co.jp"
 	ErrNon200Response = errors.New("non 200 Response found")
@@ -77,7 +81,7 @@ func (m *Industry) LinkChunk(size int) [][]IndustryLink {
 }
 
 func (m *Industry) GetAllStockCodeLinkList() error {
-	industryChunkList := m.LinkChunk(5)
+	industryChunkList := m.LinkChunk(ThreadCount)
 	stockCode := NewStockCode()
 
 	type Ret struct {
