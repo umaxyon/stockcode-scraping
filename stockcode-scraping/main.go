@@ -14,7 +14,7 @@ func handler() error {
 		return err
 	}
 
-	err = ind.GetAllStockCodeLinkList()
+	err = yh.ScrapingStockPageStart(ind.LinkList)
 	if err != nil {
 		return err
 	}
