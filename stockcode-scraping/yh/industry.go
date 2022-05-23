@@ -4,8 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"io"
-	"net/http"
+	"stockcode-scraping/utils"
 	"strings"
 	"sync"
 )
@@ -15,24 +14,8 @@ const (
 )
 
 var (
-	YahooProfileUrl   = "https://profile.yahoo.co.jp"
-	ErrNon200Response = errors.New("non 200 Response found")
+	YahooProfileUrl = "https://profile.yahoo.co.jp"
 )
-
-func GetPageDocument(url string) (*goquery.Document, error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
-	}(resp.Body)
-	if resp.StatusCode != 200 {
-		return nil, ErrNon200Response
-	}
-
-	return goquery.NewDocumentFromReader(resp.Body)
-}
 
 type IndustryLink struct {
 	Name, Url string
@@ -51,7 +34,7 @@ func NewIndustry() *Industry {
 }
 
 func (m *Industry) GetIndustryLinkList() error {
-	doc, err := GetPageDocument(YahooProfileUrl)
+	doc, err := utils.GetPageDocument(YahooProfileUrl)
 	if err != nil {
 		return err
 	}
@@ -161,7 +144,7 @@ func (sc *StockCode) Scraping(linkList []IndustryLink) ([]StockCodeLink, []error
 }
 
 func (sc *StockCode) GetStockCodeLinkList(indLink IndustryLink) ([]StockCodeLink, error) {
-	doc, err := GetPageDocument(indLink.Url)
+	doc, err := utils.GetPageDocument(indLink.Url)
 	if err != nil {
 		return nil, err
 	}
