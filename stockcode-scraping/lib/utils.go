@@ -26,14 +26,28 @@ func GetPageDocument(url string) (*goquery.Document, error) {
 	return goquery.NewDocumentFromReader(resp.Body)
 }
 
-func ListChunk[T any](linkList []T, size int) [][]T {
-	var divided [][]T
-	for i := 0; i < len(linkList); i += size {
-		end := i + size
-		if end > len(linkList) {
-			end = len(linkList)
+func EquallyDivide(allCnt int, sep int) []int {
+	div := allCnt / sep
+	rem := allCnt % sep
+	ret := make([]int, sep)
+	for i := 0; i < sep; i++ {
+		ret[i] = div
+		if i < rem {
+			ret[i]++
 		}
-		divided = append(divided, linkList[i:end])
+	}
+	return ret
+}
+
+func ListChunk[T any](linkList []T, size int) [][]T {
+	sizeArr := EquallyDivide(len(linkList), size)
+	var divided [][]T
+	start := 0
+	end := 0
+	for i := 0; i < len(sizeArr); i++ {
+		end = end + sizeArr[i]
+		divided = append(divided, linkList[start:end])
+		start = end
 	}
 	return divided
 }
