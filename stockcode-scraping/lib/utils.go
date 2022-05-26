@@ -52,13 +52,13 @@ func ListChunk[T any](linkList []T, size int) [][]T {
 	return divided
 }
 
-func LoopScraping[T any, R any](linkList []T, method func(T) ([]R, error)) ([]R, []error) {
+func LoopScraping[T any, R any](linkList []T, method func(T, int) ([]R, error), threadCnt int) ([]R, []error) {
 	var errList []error
 	var allList []R
 
 	for i := range linkList {
 		indLink := linkList[i]
-		stockCodeLinkList, e := method(indLink)
+		stockCodeLinkList, e := method(indLink, threadCnt)
 		if e != nil {
 			errList = append(errList, e)
 		} else {
@@ -68,3 +68,20 @@ func LoopScraping[T any, R any](linkList []T, method func(T) ([]R, error)) ([]R,
 	}
 	return allList, errList
 }
+
+//func LoopScraping[T any, R any](linkList []T, method func(T) ([]R, error)) ([]R, []error) {
+//	var errList []error
+//	var allList []R
+//
+//	for i := range linkList {
+//		indLink := linkList[i]
+//		stockCodeLinkList, e := method(indLink)
+//		if e != nil {
+//			errList = append(errList, e)
+//		} else {
+//			//fmt.Println(stockCodeLinkList)
+//			allList = append(allList, stockCodeLinkList...)
+//		}
+//	}
+//	return allList, errList
+//}
