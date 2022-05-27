@@ -6,6 +6,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"stockcode-scraping/lib"
 	"strings"
+	"sync"
 )
 
 var (
@@ -47,12 +48,48 @@ func GetAllStockCodeLinkList(c chan<- StockCodeLinkContainer, industryChunk [][]
 	}
 }
 
+func ParallelPageScraping(
+	linkList []StockCodeLink,
+	method func(StockCodeLink, int) ([]StockPage, error),
+	threadCnt int) ([]StockPage, []error) {
+
+	var errList []error
+	var allList []StockPage
+	chunks := lib.ListChunk(linkList, ThreadCount)
+	type S = struct {
+		ret     []StockPage
+		errList []error
+	}
+	var wg sync.WaitGroup
+	ch := make(chan S, len(chunks))
+
+	for i := range chunks {
+		wg.Add(1)
+		go func(inList []StockCodeLink) {
+			defer wg.Done()
+			ret, errList := lib.LoopScraping(inList, method, threadCnt)
+			ch <- S{ret, errList}
+		}(chunks[i])
+	}
+	wg.Wait()
+	close(ch)
+
+	for r := range ch {
+		if r.errList != nil {
+			errList = append(errList, r.errList...)
+		} else {
+			allList = append(allList, r.ret...)
+		}
+	}
+	return allList, errList
+}
+
 func GetAllStockPage(c1 <-chan StockCodeLinkContainer, c2 chan<- StockPageContainer) {
 	defer close(c2)
 	i := 0
 	for stockCodeLinkContainer := range c1 {
 		chunkStockPage, errList :=
-			lib.LoopScraping[StockCodeLink, StockPage](stockCodeLinkContainer.chunkStockCodeList, ScrapingStockPage, i)
+			ParallelPageScraping(stockCodeLinkContainer.chunkStockCodeList, ScrapingStockPage, i)
 		c2 <- StockPageContainer{chunkStockPage, errList}
 		i++
 	}

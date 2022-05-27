@@ -68,20 +68,3 @@ func LoopScraping[T any, R any](linkList []T, method func(T, int) ([]R, error), 
 	}
 	return allList, errList
 }
-
-//func LoopScraping[T any, R any](linkList []T, method func(T) ([]R, error)) ([]R, []error) {
-//	var errList []error
-//	var allList []R
-//
-//	for i := range linkList {
-//		indLink := linkList[i]
-//		stockCodeLinkList, e := method(indLink)
-//		if e != nil {
-//			errList = append(errList, e)
-//		} else {
-//			//fmt.Println(stockCodeLinkList)
-//			allList = append(allList, stockCodeLinkList...)
-//		}
-//	}
-//	return allList, errList
-//}
