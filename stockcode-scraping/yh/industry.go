@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	ThreadCount = 5
+	ThreadCount = 7
 )
 
 var (
