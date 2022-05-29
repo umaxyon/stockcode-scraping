@@ -17,3 +17,4 @@
 .aws-sam
 .idea
 output.txt
+stockcode-scraping/db/test/docker/
