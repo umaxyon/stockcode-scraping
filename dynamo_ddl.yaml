@@ -11,5 +11,5 @@ Resources:
         - AttributeName: "code"
           KeyType: "HASH"
       ProvisionedThroughput:
-        ReadCapacityUnits: "1"
-        WriteCapacityUnits: "10"
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 10
