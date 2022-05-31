@@ -63,6 +63,12 @@ func CreateTable(tmp *cloudformation.Template, db *dynamodb.DynamoDB) {
 	}
 }
 
+func CreateDB() *dynamodb.DynamoDB {
+	ses, _ := session.NewSession()
+	config := aws.NewConfig().WithRegion("ap-northeast-1").WithEndpoint("http://localhost:8000")
+	return dynamodb.New(ses, config)
+}
+
 func TestMain(m *testing.M) {
 	// Before
 	err := exec.Command("cmd", WinStartCmd...).Start()
@@ -70,9 +76,7 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 	tmp := ReadDDL()
-	ses, _ := session.NewSession()
-	config := aws.NewConfig().WithRegion("ap-northeast-1").WithEndpoint("http://localhost:8000")
-	db := dynamodb.New(ses, config)
+	db := CreateDB()
 	CreateTable(tmp, db)
 
 	code := m.Run()
