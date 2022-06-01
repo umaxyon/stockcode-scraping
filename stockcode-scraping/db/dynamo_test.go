@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -65,7 +64,7 @@ func CreateTable(tmp *cloudformation.Template, db *dynamodb.DynamoDB) {
 
 func CreateDB() *dynamodb.DynamoDB {
 	ses, _ := session.NewSession()
-	config := aws.NewConfig().WithRegion("ap-northeast-1").WithEndpoint("http://localhost:8000")
+	config := aws.NewConfig().WithRegion(AWS_REGION).WithEndpoint(LOCAL_ENDPOINT)
 	return dynamodb.New(ses, config)
 }
 
@@ -79,16 +78,19 @@ func TestMain(m *testing.M) {
 	db := CreateDB()
 	CreateTable(tmp, db)
 
+	IS_TEST = true
 	code := m.Run()
 
 	//After
 	_ = exec.Command("cmd", WinStopCmd...).Start()
 
+	IS_TEST = false
 	os.Exit(code)
 }
 
 func TestDynamo(t *testing.T) {
 	t.Run("dynamo test", func(t *testing.T) {
-		fmt.Println("hoge")
+		accessor := NewAccessor()
+		accessor.Upsert()
 	})
 }

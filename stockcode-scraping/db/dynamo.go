@@ -8,19 +8,25 @@ import (
 )
 
 var (
-	AWS_REGION = "ap-northeast-1"
+	AWS_REGION     = "ap-northeast-1"
+	IS_TEST        = false
+	LOCAL_ENDPOINT = "http://localhost:8000"
 )
 
 type DynamoAccessor struct {
 	db *dynamodb.DynamoDB
 }
 
-func NewAccessor(region string) *DynamoAccessor {
+func NewAccessor() *DynamoAccessor {
 	ses, err := session.NewSession()
 	if err != nil {
 		panic(err)
 	}
-	db := dynamodb.New(ses, aws.NewConfig().WithRegion(region))
+	config := aws.NewConfig().WithRegion(AWS_REGION)
+	if IS_TEST {
+		config = config.WithEndpoint(LOCAL_ENDPOINT)
+	}
+	db := dynamodb.New(ses, config)
 	return &DynamoAccessor{db}
 }
 
