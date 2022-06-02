@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -31,6 +32,41 @@ func NewAccessor() *DynamoAccessor {
 }
 
 func (da *DynamoAccessor) Upsert() {
-	expression.Set(expression.Name("code"), expression.Value("1111"))
+	_, err := da.db.PutItem(&dynamodb.PutItemInput{
+		TableName: aws.String("stcode"),
+		Item: map[string]*dynamodb.AttributeValue{
+			"code": {
+				S: aws.String("1111"),
+			},
+			"name": {
+				S: aws.String("あああ"),
+			},
+			"tel": {
+				S: aws.String("123-4567-8901"),
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+}
 
+func (da *DynamoAccessor) Query() {
+	keyCond := expression.Key("code").Equal(expression.Value("1111"))
+
+	expr, err := expression.NewBuilder().WithKeyCondition(keyCond).Build()
+	if err != nil {
+		panic(err)
+	}
+	result, err := da.db.Query(&dynamodb.QueryInput{
+		KeyConditionExpression:    expr.KeyCondition(),
+		ProjectionExpression:      expr.Projection(),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		TableName:                 aws.String("stcode"),
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(result)
 }

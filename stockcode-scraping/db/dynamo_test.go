@@ -92,5 +92,6 @@ func TestDynamo(t *testing.T) {
 	t.Run("dynamo test", func(t *testing.T) {
 		accessor := NewAccessor()
 		accessor.Upsert()
+		accessor.Query()
 	})
 }
