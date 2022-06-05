@@ -5,10 +5,10 @@ Resources:
     Properties:
       TableName: "stcode"
       AttributeDefinitions:
-        - AttributeName: "code"
+        - AttributeName: "Code"
           AttributeType: "S"
       KeySchema:
-        - AttributeName: "code"
+        - AttributeName: "Code"
           KeyType: "HASH"
       ProvisionedThroughput:
         ReadCapacityUnits: 1

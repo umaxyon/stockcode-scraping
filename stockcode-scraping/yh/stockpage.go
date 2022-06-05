@@ -95,7 +95,7 @@ func GetAllStockPage(c1 <-chan StockCodeLinkContainer, c2 chan<- StockPageContai
 	}
 }
 
-func ScrapingStockPageStart(industryLinkList []IndustryLink) error {
+func ScrapingStockPageStart(industryLinkList []IndustryLink) ([]StockPage, []error) {
 	industryChunkList := lib.ListChunk(industryLinkList, ThreadCount)
 
 	var allList []StockPage
@@ -115,7 +115,7 @@ func ScrapingStockPageStart(industryLinkList []IndustryLink) error {
 	}
 
 	fmt.Println(fmt.Sprintf("len(allList) = %d", len(allList)))
-	return nil
+	return allList, allErrList
 }
 
 func ScrapingStockCodeLinkList(indLink IndustryLink, threadCnt int) ([]StockCodeLink, error) {
