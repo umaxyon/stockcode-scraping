@@ -64,7 +64,7 @@ func (da *DynamoAccessor) SaveStCode(stPageList []yh.StockPage) {
 			end = len(stPageList)
 		}
 		if err := da.BatchWrite(ctx, stPageList[i:end]); err != nil {
-			fmt.Printf("SaveStCode err i=%d, end=%d", i, end)
+			fmt.Printf("SaveStCode err i=%d, end=%d, %s\n", i, end, err.Error())
 		}
 	}
 
