@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	AwsRegion         = "ap-northeast-1"
 	ErrNon200Response = errors.New("non 200 Response found")
 )
 

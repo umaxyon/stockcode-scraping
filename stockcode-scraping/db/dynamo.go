@@ -8,13 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
+	"stockcode-scraping/db/test"
+	"stockcode-scraping/lib"
 	"stockcode-scraping/yh"
-)
-
-var (
-	AWS_REGION     = "ap-northeast-1"
-	IS_TEST        = false
-	LOCAL_ENDPOINT = "http://localhost:8000"
 )
 
 type DynamoAccessor struct {
@@ -26,9 +22,9 @@ func NewAccessor() *DynamoAccessor {
 	if err != nil {
 		panic(err)
 	}
-	config := aws.NewConfig().WithRegion(AWS_REGION)
-	if IS_TEST {
-		config = config.WithEndpoint(LOCAL_ENDPOINT)
+	config := aws.NewConfig().WithRegion(lib.AwsRegion)
+	if test.IsTest {
+		config = config.WithEndpoint(test.LocalEndpoint)
 	}
 	db := dynamodb.New(ses, config)
 	return &DynamoAccessor{db}
@@ -91,7 +87,7 @@ func (da *DynamoAccessor) SaveStCode(stPageList []yh.StockPage) {
 	//}
 }
 
-func (da *DynamoAccessor) Query() {
+func (da *DynamoAccessor) Query() *dynamodb.QueryOutput {
 	keyCond := expression.Key("Code").Equal(expression.Value("1111"))
 
 	expr, err := expression.NewBuilder().WithKeyCondition(keyCond).Build()
@@ -109,4 +105,5 @@ func (da *DynamoAccessor) Query() {
 		panic(err)
 	}
 	fmt.Println(result)
+	return result
 }

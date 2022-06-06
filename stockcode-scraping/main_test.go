@@ -1,8 +1,17 @@
 package main
 
 import (
+	"fmt"
+	"stockcode-scraping/db"
+	"stockcode-scraping/db/test"
 	"testing"
 )
+
+func TestMain(m *testing.M) {
+	test.PrepareTestAspect(func() int {
+		return m.Run()
+	}, "../dynamo_ddl.yaml")
+}
 
 func TestHandler(t *testing.T) {
 	//t.Run("Unable to get IP", func(t *testing.T) {
@@ -32,5 +41,9 @@ func TestHandler(t *testing.T) {
 		if err != nil {
 			t.Fatal("Everything should be ok")
 		}
+		ret := db.NewAccessor().Query()
+
+		fmt.Println(ret)
+
 	})
 }
